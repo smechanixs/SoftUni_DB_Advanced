@@ -17,7 +17,8 @@ namespace SoftUni
             //var result = GetEmployeesWithSalaryOver50000(softUniContext);
             //var result = GetEmployeesFromResearchAndDevelopment(softUniContext);
             //var result = AddNewAddressToEmployee(softUniContext);
-            var result = GetEmployeesInPeriod(softUniContext);
+            //var result = GetEmployeesInPeriod(softUniContext);
+            var result = GetAddressesByTown(softUniContext);
             Console.WriteLine(result);
 
         }
@@ -204,5 +205,29 @@ namespace SoftUni
             }
             return employeeManagerResult.ToString().TrimEnd();
         }
+    public static string GetAddressesByTown(SoftUniContext context)
+    {
+        var adresses = context.Addresses
+                .OrderByDescending(a => a.Employees.Count)
+                .ThenBy(a => a.Town.Name)
+                .Take(10)
+                .Select(a => new
+                {
+                    AddressText = a.AddressText,
+                    TownName = a.Town.Name,
+                    ECount = a.Employees.Count
+                })
+                .ToList();
+
+        StringBuilder employeesAddresses = new StringBuilder();
+
+        foreach (var address in adresses)
+        {
+            employeesAddresses.AppendLine($"{address.AddressText}, " + $"{address.TownName} - {address.ECount} employees" );
+        }
+        return employeesAddresses.ToString().TrimEnd();
     }
+  }
+
+
 }
